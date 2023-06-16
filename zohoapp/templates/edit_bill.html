@@ -1,0 +1,1282 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    select:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    #customer_sel option:hover {
+        background-color: rgb(210, 132, 30);
+    }
+
+    .element-below-fixed {
+        padding-top: 100px;
+    }
+
+    /* width */
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    .hide {
+        display: none;
+    }
+
+    .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+        /* Adjust the alpha value to control the opacity */
+    }
+</style>
+
+<script>
+
+
+
+    function calc() {
+        $('#item_table tbody tr').each(function () {
+
+
+            var html = $(this).html();
+            if (html != '') {
+                console.log('rows');
+                var qty = $(this).find('.qty').val();
+                var rate = $(this).find('.rate').val();
+                var tax = $(this).find('.tax').val();
+                console.log(qty);
+                console.log(rate);
+                console.log(tax);
+                $(this).find('.taxamount').val((qty * rate) * (tax / 100));
+                var taxamount = parseFloat($(this).find('.taxamount').val());
+                $(this).find('.amount').val(qty * rate );
+
+                calc_total();
+            }
+        });
+    }
+
+    function calc_total() {
+        total = 0;
+        $('.amount').each(function () {
+            total += parseFloat($(this).val());
+
+        });
+        taxamount = 0;
+        $('.taxamount').each(function () {
+            taxamount += parseFloat($(this).val());
+
+        });
+
+        // total = Math.round(total);
+        // taxamount = Math.round(taxamount);
+        $('#subtotal').val(total.toFixed(2));
+        $('#total_taxamount').val(taxamount.toFixed(2));
+
+        $('#total').val((taxamount + total).toFixed(2));
+        // $('#baldue').val((taxamount + total).toFixed(2));
+
+        test();
+    }
+
+    function test() {
+        // console.log('test');
+        d = 0;
+        var pos = document.getElementById("pos").value;
+        var sos = document.getElementById("sos").value;
+
+        if (pos == sos) {
+            // console.log(pos);
+            // console.log(state);
+            // console.log(taxamount);
+            gst = taxamount / 2;
+            // gst = Math.round (gst);
+            // console.log(gst);
+            $('#cgst').val(parseFloat(gst.toFixed(2)));
+            $('#sgst').val(parseFloat(gst.toFixed(2)));
+            $('#igst').val(parseFloat(d.toFixed(2)));
+            document.getElementById("tr_cgst").style.display = "table-row";
+            document.getElementById("tr_sgst").style.display = "table-row";
+
+
+        }
+
+        if (pos != sos) {
+            // console.log(pos);
+            // console.log(state);
+            $('#igst').val(taxamount.toFixed(2));
+            $('#cgst').val(d.toFixed(2));
+            $('#sgst').val(d.toFixed(2));
+            document.getElementById('tr_igst').style.display = "table-row";
+        }
+    }
+    // Calculate total
+    $(document).ready(function () {
+        $('#shipping, #discount').on('keyup', function () {
+            var shipping_charge = parseFloat($('#shipping').val() || 0);
+            var discount_amnt = parseFloat($('#discount').val() || 0);
+            var subtotal = parseFloat($('#subtotal').val() || 0);
+            var total_tax = parseFloat($('#total_taxamount').val() || 0);
+            var total = subtotal + total_tax + shipping_charge - discount_amnt;
+            // total = Math.round(total);
+
+            $('#shipping_charge').val(shipping_charge.toFixed(2));
+            $('#discount_amnt').val(discount_amnt.toFixed(2));
+            $('#total').val(total.toFixed(2));
+        });
+    });
+
+</script>
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script>
+
+    function cancelDialog() {
+
+        var frm = document.getElementById("forms");
+        let customMsg = "Do you want to cancel?";
+
+        if (confirm(customMsg)) {
+            alert("Bill cancelled!")
+        }
+    }
+
+    function saveAsDraftDialog() {
+
+        var frm = document.getElementById("forms");
+        frm.action = ("{% url 'create_purchase_bill' %}")
+    }
+
+    function saveAndOpenDialog() {
+
+        var frm = document.getElementById("forms");
+        frm.action = ("{% url 'create_purchase_bill1' %}")
+    }
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+
+
+</script>
+
+
+<section>
+    <!-- <div class="fixed-top  " style="top: 7rem; margin-left: 20rem;"> -->
+
+
+    <div class="row  ml-2">
+        <div class="col-md-3 "><a class="text-white" style="font-size: 1.5rem;"><i class="fas fa-file-invoice"></i> New
+                Bill</a></div>
+        <input type="hidden" id="state" value="{{ company.state }}">
+    </div>
+
+    <div style="height: 600px; overflow-y: scroll;">
+        <form method="POST" action="" class="p-5" enctype="multipart/form-data" novalidate id="forms">
+            {% csrf_token %}
+            <div class="row mb-4 border-top pt-5">
+                <div class="col-sm-2"><label for="customer_name">Vendor Name*</label></div>
+                <div class="col-sm-10 d-flex align-items-center">
+                    <select class="form-control text-dark" id="vendor_sel" name="vendor_name"
+                        style="width: 50%;  background: white;">
+                        <option>Select Vendor</option>
+                        {% for v in vendors %}
+                        <option value="{{v.first_name}} {{v.last_name}}">
+                            {{v.first_name}} {{v.last_name}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <a href="{% url 'add_vendor_for_bills'  %}" class="p-2">
+                        <i class="fas fa-plus p-2 rounded " style="color: white; background-color: rgb(210, 132, 30); "
+                            data-toggle="tooltip" title="Create Vendor"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="row mb-4  ">
+                <div class="col-sm-2"><label for="vendor_email">Email</label></div>
+                <div class="col-sm-10"><input type="email" id="vendor_email" name="vendor_email"
+                        class="form-control bg-white text-dark" style="width: 50%;">
+
+                </div>
+            </div>
+            <div class="row mb-4  ">
+                <div class="col-sm-2"><label for="vendor_sos">Source Of Supply</label></div>
+                <div class="col-sm-10"><input type="text" id="sos" name="sos" class="form-control bg-white text-dark"
+                        style="width: 50%;">
+
+                </div>
+            </div>
+            <div class="row mb-4 border-top pt-5">
+                <div class="col-sm-2"><label for="customer_name">Customer Name*</label></div>
+                <div class="col-sm-10 d-flex align-items-center">
+                    <select class="form-control text-dark" id="customer_sel" name="customer_name"
+                        style="width: 50%;  background: white;">
+                        <option>Select Customer</option>
+                        {% for cust in customers %}
+                        <option value="{{cust.customerName}}" data-pos="{{cust.placeofsupply}}">
+                            {{cust.customerName}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <a href="{% url 'add_customer_for_bills'  %}" class="p-2">
+                        <i class="fas fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); "
+                            data-toggle="tooltip" title="Create Customer"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="row mb-4   ">
+                <div class="col-sm-2"><label for="customer_email">Email</label></div>
+                <div class="col-sm-10"><input type="email" id="customer_email" name="customer_email"
+                        class="form-control bg-white text-dark" style="width: 50%;">
+
+                </div>
+            </div>
+            <div class="row mb-4   ">
+                <div class="col-sm-2"><label for="customer_pos">Place Of Supply</label></div>
+                <div class="col-sm-10"><input type="text" id="pos" name="pos" class="form-control bg-white text-dark"
+                        style="width: 50%;">
+
+                </div>
+            </div>
+            <div class="row mb-4 border-top  pt-5">
+                <div class="col-sm-2"><label for="bill_number">Bill#*</label></div>
+                <div class="col-sm-4"><input type="text" id="bill_number" name="bill_number"
+                        class="form-control bg-white text-dark" value="Bill-00{{b_no}}">
+
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-sm-2"><label for="reference">Order Number</label></div>
+                <div class="col-sm-4"> <input type="number" id="order_number" name="order_number"
+                        class="form-control bg-white text-dark"></div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-sm-2"><label for="reference">Bill Date*</label></div>
+                <div class="col-sm-4"> <input type="date" id="bill_date" name="bill_date"
+                        class="form-control bg-white text-dark"></div>
+            </div>
+            <div class="row ">
+                <div class="col-sm-2"><label for="reference">Due Date*</label></div>
+                <div class="col-sm-4"> <input type="date" id="due_date" name="due_date"
+                        class="form-control bg-white text-dark">
+                </div>
+                <div class="col-sm-2 "><label class="text-right">Payment Terms</label></div>
+                <div class="col-sm-4 d-flex align-items-center"> <select id="p_terms" name="p_terms"
+                        class="form-control bg-white text-dark">
+                        {% for t in terms %}
+                        <option value="{{t.Days}}">{{t.Terms}}</option>
+                        {% endfor%}
+                        <option value="15">Net 15</option>
+                        <option value="30">Net 30</option>
+                        <option value="0">Due On Receipt</option>
+                        <!-- <option value="add_new" id="add_new_option">+ Add Payment Term</option> -->
+                    </select>
+                    <button type="button" class="btn p-2" data-toggle="modal" data-target="#addTermsModal">
+                        <i class="fas fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); "
+                            data-toggle="tooltip" title="Configure Terms"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="form-check border-bottom pt-2 pb-5">
+                <input class="form-check-input" type="checkbox" value="" id="checkbox" onchange="updateTaxHeader()">
+                <label class="form-check-label" for="checkbox">
+                    This transaction is applicable for reverse charge
+                </label>
+            </div>
+            <label for="">Price List</label><br>
+            <table class="table  text-black" id="item_table" style="background-color: rgba(250, 227, 198, 0.8);"
+                onchange="calc()">
+                <thead>
+                    <tr>
+                        <th>Item Details <a href=""><i class="fas fa-plus p-2 rounded"
+                                    style="color: white; background-color: rgb(210, 132, 30);"></i></a></th>
+                        <th>Account</th>
+                        <th class="text-right">Quantity</th>
+                        <th class="text-right">Rate</th>
+                        <th class="text-right" id="tax_head">Tax</th>
+                        <th class="text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr id='row1'>
+                        <td>
+                            <div class='form-group'><select
+                                    class='form-control bg-transparent text-black border-0 item_select itm'
+                                    name='item[]' id='item1'>
+                                    <option class='text-dark'>Select Items</option>
+                                    {% for i in items %}
+                                    <option class="text-dark" value="{{i.Name}}">{{i.Name}}</option>
+                                    {% endfor %}
+                                </select></div>
+                        </td>
+                        <td>
+                            <div class='form-group'>
+                                <select class='form-control bg-transparent text-black border-0 account '
+                                    name='account[]' id='account1'>
+                                    <option class='text-dark '>Select Account</option>
+                                    <option class="text-dark" value="Accounts Payable">Accounts Payable</option>
+                                    <option class="text-dark" value="Accounts recevable">Accounts Recevable</option>
+                                    <option class="text-dark" value="Advance Tax">Advance Tax</option>
+                                    <option class="text-dark" value="Employee Advance">Employee Advance</option>
+                                    {% for ac in accounts %}
+                                    <option class="text-dark" value="{{ac.Name}}">{{ac.Name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </td>
+                        <td class='text-right'><input type='number' id='qty1'
+                                class='bg-transparent border-0 text-black text-right qty' name='quantity[]' value='0'>
+                        </td>
+                        <td class='text-right'><input type='number' id='rate1'
+                                class='bg-transparent border-0 text-black text-right rate' name='rate[]' value='0.00'>
+                        </td>
+
+                        <td class='text-right'> <select name='tax[]' id='tax1'
+                                class='form-control bg-transparent text-black text-right border-0 tax'>
+                                <option value=0>Non Taxable</option>
+                                <option value=0>0% GST/IGST</option>
+                                <option value=5>5% GST/IGST</option>
+                                <option value=12>12% GST/IGST</option>
+                                <option value=18>18% GST/IGST</option>
+                                <option value=28>28% GST/IGST</option>
+                                <option value=0>Out of Scope(0%)</option>
+                            </select></td>
+                        <td style="display: none;">
+                            <input type="number" name='taxamount[]' id="taxamount1" class="form-control taxamount" />
+                        </td>
+                        <td class='text-right'><input type='number' id='amount1'
+                                class='bg-transparent border-0 text-black text-right amount' name='amount[]'
+                                value='0.00'></td>
+                        <td class='text-center'><button type='button' id='copy_btn1'
+                                class='btn btn-transparent text-secondary btn-sm   copy_row' data-toggle='tooltip'
+                                data-placement='top' title='Clone' style='width:30px'><i
+                                    class="fas fa-copy"></i></button>
+                        </td>
+                        <td class='text-center'><button type='button' id='del_btn1'
+                                class='btn btn-transparent text-danger btn-sm   delete-row' data-toggle='tooltip'
+                                data-placement='top' title='delete-row' style='width:30px'><i
+                                    class='fa fa-times'></i></button></td>
+                    </tr>
+                </tbody>
+
+            </table>
+            <button type="button" class="btn btn-sm text-white" style="background-color: rgb(210, 132, 30) ;"
+                id="add-row">Add another line</button>
+
+            <div class="row border-bottom pb-5">
+                <div class="col-sm-6 d-flex flex-column mt-auto">
+
+
+                </div>
+                <div class="col-sm-6">
+                    <table class=" table  text-black" style="background-color: rgba(250, 227, 198, 0.8);">
+                        <tr>
+                            <td>Sub Total</td>
+                            <td></td>
+                            <td><input type="number" id="subtotal" name="subtotal" step="any" value="0.00"
+                                    class="bg-transparent border-0 text-right subtotal "></td>
+                        </tr>
+                        <tr style="display: none;" id="tr_igst">
+                            <td>IGST</td>
+                            <td></td>
+                            <td><input type="number" id='igst' name="igst" step="any" value="0.00"
+                                    class="form-control bg-transparent border-0 text-right igst text-dark"></td>
+                        </tr>
+                        <tr style="display: none;" id="tr_cgst">
+                            <td>CGST</td>
+                            <td></td>
+                            <td><input type="number" id='cgst' name="cgst" step="any" value="0.00"
+                                    class="form-control bg-transparent border-0 text-right cgst text-dark"></td>
+                        </tr>
+                        <tr style="display: none;" id="tr_sgst">
+                            <td>SGST</td>
+                            <td></td>
+                            <td><input type="number" id='sgst' name="sgst" step="any" value="0.00"
+                                    class="form-control bg-transparent border-0 text-right sgst text-dark"></td>
+                        </tr>
+                        <tr>
+                            <td>Tax Amount</td>
+                            <td></td>
+                            <td><input type="number" id="total_taxamount" name="total_taxamount" step="any" value="0.00"
+                                    class="total_taxamount form-control bg-transparent border-0 text-right text-dark"></td>
+                        </tr>
+                        <tr>
+                            <td>Shipping Charges</td>
+                            <td><input type="number" id="shipping"> <i class="fas fa-question"></i></td>
+                            <td><input type="text" id="shipping_charge" name="shipping_charge" step="any" value="0.00"
+                                    class="form-control bg-transparent border-0 text-right shipping_charge text-dark"></td>
+                        </tr>
+                        <tr>
+                            <td>Discount</td>
+                            <td><input type="number" id="discount"> <i class="fas fa-question"></i></td>
+                            <td><input type="text" id="discount_amnt" name="discount_amnt" step="any" value="0.00"
+                                    class="form-control bg-transparent border-0 text-right discount_amnt text-dark">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Total ( &#x20B9; )</th>
+                            <th></th>
+                            <th><input type="number" id="total" name="total" step="any" value="0.00"
+                                    class="form-control bg-transparent border-0 text-right total text-dark"></th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row py-5 border-bottom">
+
+                <div class="col-md-12 py-5 text-center rounded" style="background-color: rgba(250, 227, 198, 0.8);">
+                    <label class="text-dark" for="">Attach File(s) to Purchase Bill</label><br>
+
+                    <label for="file-upload" class="btn text-white border-0"
+                        style="background-color: rgb(210, 132, 30);">
+                        <i class="fas fa-upload text-white"></i> Upload File
+                    </label>
+                    <input id="file-upload" type="file" name="file" style="display:none;">
+
+
+
+                </div>
+            </div>
+
+            <input type="submit" class="btn text-white mt-5" style="background-color:  rgb(59, 59, 58) ; "
+                onclick="saveAsDraftDialog()" value="Save As Draft">
+            <input type="submit" class="btn text-white mt-5" style="background-color: rgb(210, 132, 30) ; "
+                onclick="saveAndSendDialog()" value="Save And Open">
+            <input type="submit" class="btn text-white mt-5" style="background-color:  rgb(59, 59, 58) ; "
+                onclick="cancelDialog()" value="Cancel">
+        </form>
+
+
+
+    </div>
+
+    </div>
+
+
+
+</section>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E="
+    crossorigin="anonymous"></script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" integrity="sha512-somehash"
+    crossorigin="anonymous"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#customer_sel').on('change', function () {
+            select = $('#customer_sel').val();
+            // console.log(select);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'get_customer_data_bill' %}",
+                data: {
+                    id: select
+                },
+                success: function (response) {
+                    // console.log(response)
+                    email = response.email
+                    pos = response.pos
+                    document.getElementById('customer_email').value = email
+                    document.getElementById('pos').value = pos
+
+                }
+
+            });
+
+
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#vendor_sel').on('change', function () {
+            select = $('#vendor_sel').val();
+            // console.log(select);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'get_vendor_data_bill' %}",
+                data: {
+                    id: select
+                },
+                success: function (response) {
+                    email = response.email
+                    sos = response.sos
+                    // console.log(email);
+                    // console.log(sos);
+                    document.getElementById('vendor_email').value = email
+                    document.getElementById('sos').value = sos
+
+                }
+
+            });
+
+
+        });
+    });
+</script>
+
+
+
+<script>
+
+    // set todays date on estimate date field
+    var today = new Date().toISOString().substr(0, 10);
+    document.getElementById("bill_date").value = today;
+
+    // Get the bill date and due date elements
+    var billDateInput = document.getElementById("bill_date");
+    var dueDateInput = document.getElementById("due_date");
+
+    // Add an event listener to the payment terms select element
+    var paymentTermsSelect = document.getElementById("p_terms");
+    paymentTermsSelect.addEventListener("change", function () {
+        var selectedOption = paymentTermsSelect.options[paymentTermsSelect.selectedIndex];
+        var paymentTermsValue = selectedOption.value;
+
+        var billDate = new Date(billDateInput.value);
+        var dueDate = new Date(billDate.getTime() + (paymentTermsValue * 24 * 60 * 60 * 1000));
+        dueDateInput.value = dueDate.toISOString().split("T")[0];
+    });
+
+
+
+    // Add new row
+    $(document).ready(function () {
+        $('#add-row').click(function () {
+            var table = document.getElementById("item_table");
+            var RowCount = table.rows.length;
+            // console.log(RowCount);
+            var newRow = $(`
+            <tr id='row${RowCount}' >
+                <td>
+                    <div class='form-group'>
+                        <select
+                            class='form-control bg-transparent text-black border-0 item_select' name='item[]'
+                            id='item${RowCount}'>
+                            <option class='text-dark'>Select Items</option>
+                            {% for i in items %}
+                            <option class="text-dark" value="{{i.Name}}">{{i.Name}}</option>
+                            {% endfor %}
+                        </select></div>
+                </td>
+                <td>
+                    <div class='form-group'>
+                        <select class='form-control bg-transparent text-black border-0 account '
+                            name='account[]' id='account${RowCount}>
+                            <option class='text-dark ' selected>Select Account</option>
+                            <option class="text-dark" value="Accounts Payable">Accounts Payable</option>
+                            <option class="text-dark" value="Accounts recevable">Accounts Recevable</option>
+                            <option class="text-dark" value="Advance Tax">Advance Tax</option>
+                            <option class="text-dark" value="Employee Advance">Employee Advance</option>
+                            {% for ac in accounts %}
+                            <option class="text-dark" value="{{ac.Name}}">{{ac.Name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </td>
+                <td class='text-right'><input type='number' id='qty${RowCount}'
+                        class='bg-transparent border-0 text-black text-right qty' name='quantity[]' value='0.00' >
+                </td>
+                <td class='text-right'><input type='number' id='rate${RowCount}'
+                        class='bg-transparent border-0 text-black text-right rate' name='rate[]' value='0.00'
+                        ></td>
+               
+                <td class='text-right'> <select name='tax[]' id='tax${RowCount}'
+                        class="form-control bg-transparent text-black text-right border-0 tax">
+                        <option value=0>Non Taxable</option>
+                        <option value=0>0% GST/IGST</option>
+                        <option value=5>5% GST/IGST</option>
+                        <option value=12>12% GST/IGST</option>
+                        <option value=18>18% GST/IGST</option>
+                        <option value=28>28% GST/IGST</option>
+                        <option value=0>Out of Scope(0%)</option>
+                       
+                    </select></td>
+                <td style="display: none;">
+                    <input type="text" name='taxamount[]' id="taxamount${RowCount}" class="form-control taxamount" />
+                            </td>
+                <td class='text-right'><input type='number' id='amount${RowCount}'
+                        class='bg-transparent border-0 text-black text-right amount' name='amount[]' value='0.00'></td>
+                <td class='text-center'><button type='button' id='copy_btn${RowCount}'
+                        class='btn btn-transparent text-secondary btn-sm   copy_row' data-toggle='tooltip'
+                        data-placement='top' title='Clone' style='width:30px'><i
+                            class="fas fa-copy"></i></button>
+                </td>
+                <td class='text-center'><button type='button' id='del_btn${RowCount}'
+                        class='btn btn-transparent text-danger btn-sm  delete-row'
+                        style='width:30px'><i class='fa fa-times'></i></button></td>
+            </tr>`);
+            $('#item_table').append(newRow);
+        });
+
+    //Duplicate row function
+       $('#item_table').on('click', '.copy_row', function () {
+            // console.log('hi');
+            var table = document.getElementById("item_table");
+            var RowCount = table.rows.length;
+            // console.log(RowCount);
+
+            // Get the values from the current row
+            var currentItem = $(this).closest('tr').find("select[name='item[]']").val();
+            var currentAccount = $(this).closest('tr').find("select[name='account[]']").val();
+            var currentQuantity = $(this).closest('tr').find("input[name='quantity[]']").val();
+            var currentRate = $(this).closest('tr').find("input[name='rate[]']").val();
+            var currentTax = $(this).closest('tr').find("select[name='tax[]']").val();
+            var currentTaxText = $(this).closest('tr').find("select[name='tax[]'] option:selected").text();
+            var currentTaxAmount = $(this).closest('tr').find("input[name='taxamount[]']").val();
+            var currentAmount = $(this).closest('tr').find("input[name='amount[]']").val();
+            // console.log(currentItem);
+            // console.log(currentAccount);
+            // console.log(currentQuantity);
+            // console.log(currentRate);
+            // console.log(currentTax);
+            // console.log(currentTaxAmount);
+            // console.log(currentAmount);
+
+            var newRow = $(`
+            <tr id='row${RowCount}' >
+                <td>
+                    <div class='form-group'>
+                        <select
+                            class='form-control bg-transparent text-black border-0 item_select' name='item[]'
+                            id='item${RowCount}'>
+                            <option class='text-dark ' value='${currentItem}'>${currentItem}</option>
+                            {% for i in items %}
+                            <option class="text-dark" value="{{i.Name}}">{{i.Name}}</option>
+                            {% endfor %}
+                        </select></div>
+                </td>
+                <td>
+                    <div class='form-group'>
+                        <select class='form-control bg-transparent text-black border-0 account '
+                            name='account[]' id='account${RowCount}>
+                            <option class='text-dark ' value='${currentAccount}'>${currentAccount}</option>
+                            <option class="text-dark" value="Accounts Payable">Accounts Payable</option>
+                            <option class="text-dark" value="Accounts recevable">Accounts Recevable</option>
+                            <option class="text-dark" value="Advance Tax">Advance Tax</option>
+                            <option class="text-dark" value="Employee Advance">Employee Advance</option>
+                            {% for ac in accounts %}
+                            <option class="text-dark" value="{{ac.Name}}">{{ac.Name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </td>
+                <td class='text-right'><input type='number' id='qty${RowCount}' value="${currentQuantity}"
+                        class='bg-transparent border-0 text-black text-right qty' name='quantity[]' value='0.00' >
+                </td>
+                <td class='text-right'><input type='number' id='rate${RowCount}' value="${currentRate}"
+                        class='bg-transparent border-0 text-black text-right rate' name='rate[]' value='0.00'
+                        ></td>
+               
+                <td class='text-right'> <select name='tax[]' id='tax${RowCount}'
+                        class="form-control bg-transparent text-black text-right border-0 tax">
+                        <option  value='${currentTax}'>${currentTaxText}</option>
+                        <option value=0>Non Taxable</option>
+                        <option value=0>0% GST/IGST</option>
+                        <option value=5>5% GST/IGST</option>
+                        <option value=12>12% GST/IGST</option>
+                        <option value=18>18% GST/IGST</option>
+                        <option value=28>28% GST/IGST</option>
+                        <option value=0>Out of Scope(0%)</option>
+                       
+                    </select></td>
+                <td style="display: none;">
+                    <input type="text" name='taxamount[]' id="taxamount${RowCount}" class="form-control taxamount" value="${currentTaxAmount}"/>
+                            </td>
+                <td class='text-right'><input type='number' id='amount${RowCount}' value="${currentAmount}"
+                        class='bg-transparent border-0 text-black text-right amount' name='amount[]' value='0.00'></td>
+                <td class='text-center'><button type='button' id='copy_btn${RowCount}'
+                        class='btn btn-transparent text-secondary btn-sm   copy_row' data-toggle='tooltip'
+                        data-placement='top' title='Clone' style='width:30px'><i
+                            class="fas fa-copy"></i></button>
+                </td>
+                <td class='text-center'><button type='button' id='del_btn${RowCount}'
+                        class='btn btn-transparent text-danger btn-sm  delete-row'
+                        style='width:30px'><i class='fa fa-times'></i></button></td>
+            </tr>`);
+
+            $('#item_table').append(newRow);
+            calc_total();
+        });
+
+    // Delete row
+        $('#item_table').on('click', '.delete-row', function () {
+            $(this).closest('tr').remove();
+            calc();
+        });
+
+    });
+
+</script>
+
+<script>
+    function updateTaxHeader() {
+        var checkbox = document.getElementById("checkbox");
+        var taxHeader = document.getElementById("tax_head");
+
+        if (checkbox.checked) {
+            taxHeader.innerText = "Tax (Reverse Charge)";
+        } else {
+            taxHeader.innerText = "Tax";
+        }
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+
+
+        var roinc = 0
+        //console.log("ajax");
+        // var place = document.getElementById('pos').value;
+
+        $(document).on('click', '#item1', function () {
+            select = $('#item1').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    
+                    document.getElementById('rate1').value = rate
+                }
+            });
+
+        });
+        // //console.log('pos:'+place_of_supply);
+        $(document).on('click', '#item2', function () {
+            select = $('#item2').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate2').value = rate;               }
+            });
+
+        });
+
+        $(document).on('click', '#item3', function () {
+            select = $('#item3').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate3').value = rate;               }
+            });
+
+        });
+
+        $(document).on('click', '#item4', function () {
+            select = $('#item4').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate4').value = rate;               }
+            });
+
+        });
+
+        $(document).on('click', '#item5', function () {
+            select = $('#item5').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate5').value = rate;               }
+            });
+
+        });
+
+        $(document).on('click', '#item6', function () {
+            select = $('#item6').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate6').value = rate;               }
+            });
+
+        });
+
+        $(document).on('click', '#item7', function () {
+            select = $('#item7').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate7').value = rate;               }
+            });
+
+        });
+
+        $(document).on('click', '#item8', function () {
+            select = $('#item8').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate8').value = rate;               }
+            });
+
+        });
+
+        $(document).on('click', '#item9', function () {
+            select = $('#item9').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate9').value = rate;               }
+            });
+
+        });
+
+        $(document).on('click', '#item10', function () {
+            select = $('#item10').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate10').value =rate;
+
+
+
+                }
+            });
+
+        });
+
+        $(document).on('click', '#item11', function () {
+            select = $('#item11').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate11').value =rate;
+
+
+
+                }
+            });
+
+        });
+
+        $(document).on('click', '#item12', function () {
+            select = $('#item12').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate12').value =rate;
+
+
+
+                }
+            });
+
+        });
+
+        $(document).on('click', '#item13', function () {
+            select = $('#item13').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate13').value =rate;
+
+
+
+                }
+            });
+
+        });
+
+        $(document).on('click', '#item14', function () {
+            select = $('#item14').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate14').value =rate;
+
+
+
+                }
+            });
+
+        });
+
+        $(document).on('click', '#item15', function () {
+            select = $('#item15').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate15').value =rate;
+
+
+
+                }
+            });
+
+        });
+
+        $(document).on('click', '#item16', function () {
+            select = $('#item16').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate16').value =rate;
+
+
+
+                }
+            });
+
+        });
+
+        $(document).on('click', '#item17', function () {
+            select = $('#item17').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate17').value =rate;
+
+
+
+                }
+            });
+
+        });
+
+        $(document).on('click', '#item18', function () {
+            select = $('#item18').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate18').value =rate;
+
+
+
+                }
+            });
+
+        });
+
+        $(document).on('click', '#item19', function () {
+            select = $('#item19').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate19').value =rate;
+
+
+
+                }
+            });
+
+        });
+
+        $(document).on('click', '#item20', function () {
+            select = $('#item20').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate20').value =rate;
+
+
+
+                }
+            });
+
+        });
+
+        $(document).on('click', '#item21', function () {
+            select = $('#item21').val();
+            customer = $('#customer_sel').val();
+            //console.log(select);
+            //console.log(customer);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'itemdata_bills' %}",
+                data: {
+                    id: select,
+                    cust: customer
+                },
+                success: function (response) {
+                    //console.log(response)
+                    rate = response.rate
+                    document.getElementById('rate21').value =rate;
+
+
+
+                }
+            });
+
+        });
+
+
+    });
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Add payment terms ------------------------------------------------------------------------------------------------------------------------->
+
+<div class="modal fade" id="addTermsModal" tabindex="-1" role="dialog" aria-labelledby="addTermsModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document" style="z-index: 1050;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTermsModalLabel">Add Payment Terms</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'payment_term_for_bills' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="termName">Term Name</label>
+                        <input type="text" class="form-control" id="termName" name="termName"
+                            placeholder="Enter term name">
+                    </div>
+                    <div class="form-group">
+                        <label for="numberOfDays">Number of Days</label>
+                        <input type="number" class="form-control" id="numberOfDays" name="numberOfDays"
+                            placeholder="Enter number of days">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

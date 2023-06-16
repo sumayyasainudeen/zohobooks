@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  /* width */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+</style>
+
+
+<!-- <div class="fixed-top  " style="top: 7rem; margin-left: 20rem;"> -->
+
+  <section id="estimates_section">
+    <div class="row  mx-2">
+      <div class="col-md-6 py-2">
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            All Bills <i class="fas fa-caret-down"></i>
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <!-- Dropdown menu items here -->
+            <a class="dropdown-item" href="#">Item 1</a>
+            <a class="dropdown-item" href="#">Item 2</a>
+            <a class="dropdown-item" href="#">Item 3</a>
+          </div>
+        </div>
+
+      </div>
+      <div class="col-md-6 form-inline justify-content-end py-2">
+        <a style="color: white; background-color: rgb(210, 132, 30);" class="btn mr-1" href="{% url 'new_bill' %}"><i
+            class="fa-solid fa-plus " ></i>New</a>
+        <div class="dropdown rounded" style="color: white; background-color: rgb(210, 132, 30);">
+          <button type="button" class="btn dropdown-toggle text-white" data-toggle="dropdown">
+
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="#">Create Bill</a>
+            <a class="dropdown-item" href="#">Create Bill (Pre GST)</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-12" style="height: 600px; overflow-y: scroll;">
+      <table id="estimates-table" class="table  text-white text-center">
+        <thead>
+          <tr>
+            <th>DATE</th>
+            <th>BILL NUMBER</th>
+            <th>ORDER NUMBER</th>
+            <th>CUSTOMER NAME</th>
+            <th>VENDOR NAME</th>
+            <th>STATUS</th>
+            <th>AMOUNT</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for bill in bills %}
+          <tr class="clickable-row" data-href="{% url 'bill_view' bill.id %}">
+            <td>{{bill.bill_date}}</td>
+            <td>{{bill.bill_no}}</td>
+            <td>{{bill.order_number}}</td>
+            <td>{{bill.customer_name}}</td>
+            <td>Mr.{{bill.vendor_name}}</td>
+            <td>{{bill.status}}</td>
+            <td>{{bill.total}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+
+
+      </table>
+</div>
+  </section>
+
+
+  
+</div>
+
+
+<script>
+  // Add click event listener to all rows with class "clickable-row"
+  const rows = document.querySelectorAll('.clickable-row');
+  rows.forEach(row => {
+    row.addEventListener('click', () => {
+      // Get the URL from the "data-href" attribute
+      const url = row.getAttribute('data-href');
+      // Navigate to the URL
+      window.location.href = url;
+    });
+  });
+</script>
+
+
+
+
+{% endblock %}
