@@ -51,7 +51,7 @@
     }
 
     .modal-backdrop {
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: rgba(0, 0, 0, 0.8);
         z-index: 999;
         /* Adjust the alpha value to control the opacity */
     }
@@ -168,7 +168,7 @@
         }
     }
 
-    function update() {
+    function saveAsDraftDialog() {
 
         var frm = document.getElementById("forms");
         frm.action = ("{% url 'create_purchase_bill' %}")
@@ -193,13 +193,13 @@
 
 
     <div class="row  ml-2">
-        <div class="col-md-3 "><a class="text-white" style="font-size: 1.5rem;"><i class="fas fa-file-invoice"></i> Edit
+        <div class="col-md-3 "><a class="text-white" style="font-size: 1.5rem;"><i class="fas fa-file-invoice"></i> New
                 Bill</a></div>
         <!-- <input type="hidden" id="state" value="{{ company.state }}"> -->
     </div>
 
     <div style="height: 600px; overflow-y: scroll;">
-        <form method="POST" action="{% url 'update_bills' bill.id %}" class="p-5" enctype="multipart/form-data" novalidate id="forms">
+        <form method="POST" action="" class="p-5" enctype="multipart/form-data" novalidate id="forms">
             {% csrf_token %}
             <div class="row mb-4 border-top pt-5">
                 <div class="col-sm-2"><label for="customer_name">Vendor Name*</label></div>
@@ -207,7 +207,7 @@
                     <select class="form-control text-dark" id="vendor_sel" name="vendor_name"
                         style="width: 50%;  background: white;">
                         <option>Select Vendor</option>
-                        <option id="crt_vendor" value="{{bill.vendor_name}}" selected>{{bill.vendor_name}}</option>
+                        <option id="crt_vendor" selected></option>
                         {% for v in vendors %}
                         <option value="{{v.first_name}} {{v.last_name}}">
                             {{v.first_name}} {{v.last_name}}
@@ -223,14 +223,14 @@
             <div class="row mb-4  ">
                 <div class="col-sm-2"><label for="vendor_email">Email</label></div>
                 <div class="col-sm-10"><input type="email" id="vendor_email" name="vendor_email"
-                        class="form-control bg-white text-dark" style="width: 50%;" value="{{bill.vendor_email}}">
+                        class="form-control bg-white text-dark" style="width: 50%;">
 
                 </div>
             </div>
             <div class="row mb-4  ">
                 <div class="col-sm-2"><label for="vendor_sos">Source Of Supply</label></div>
                 <div class="col-sm-10"><input type="text" id="sos" name="sos" class="form-control bg-white text-dark"
-                        style="width: 50%;" value="{{bill.source_of_supply}}">
+                        style="width: 50%;">
 
                 </div>
             </div>
@@ -240,7 +240,7 @@
                     <select class="form-control text-dark" id="customer_sel" name="customer_name"
                         style="width: 50%;  background: white;">
                         <option>Select Customer</option>
-                        <option id="crt_cust" value="{{bill.customer_name}}" selected>{{bill.customer_name}}</option>
+                        <option id="crt_cust" selected></option>
                         {% for cust in customers %}
                         <option value="{{cust.customerName}}" data-pos="{{cust.placeofsupply}}">
                             {{cust.customerName}}
@@ -256,46 +256,46 @@
             <div class="row mb-4   ">
                 <div class="col-sm-2"><label for="customer_email">Email</label></div>
                 <div class="col-sm-10"><input type="email" id="customer_email" name="customer_email"
-                        class="form-control bg-white text-dark" style="width: 50%;" value="{{bill.customer_email}}">
+                        class="form-control bg-white text-dark" style="width: 50%;">
 
                 </div>
             </div>
             <div class="row mb-4   ">
                 <div class="col-sm-2"><label for="customer_pos">Place Of Supply</label></div>
                 <div class="col-sm-10"><input type="text" id="pos" name="pos" class="form-control bg-white text-dark"
-                        style="width: 50%;" value="{{bill.place_of_supply}}">
+                        style="width: 50%;">
 
                 </div>
             </div>
             <div class="row mb-4 border-top  pt-5">
                 <div class="col-sm-2"><label for="bill_number">Bill#*</label></div>
                 <div class="col-sm-4"><input type="text" id="bill_number" name="bill_number"
-                        class="form-control bg-white text-dark" value="{{bill.bill_no}}">
+                        class="form-control bg-white text-dark" value="Bill-00{{b_no}}">
 
                 </div>
             </div>
             <div class="row mb-4">
                 <div class="col-sm-2"><label for="reference">Order Number</label></div>
                 <div class="col-sm-4"> <input type="number" id="order_number" name="order_number"
-                        class="form-control bg-white text-dark" value="{{bill.order_number}}"></div>
+                        class="form-control bg-white text-dark"></div>
             </div>
             <div class="row mb-4">
                 <div class="col-sm-2"><label for="reference">Bill Date*</label></div>
                 <div class="col-sm-4"> <input type="date" id="bill_date" name="bill_date"
-                        class="form-control bg-white text-dark" value="{{ bill.bill_date|date:'Y-m-d'}}"></div>
+                        class="form-control bg-white text-dark"></div>
             </div>
             <div class="row ">
                 <div class="col-sm-2"><label for="reference">Due Date*</label></div>
                 <div class="col-sm-4"> <input type="date" id="due_date" name="due_date"
-                        class="form-control bg-white text-dark" value="{{bill.due_date|date:'Y-m-d'}}">
+                        class="form-control bg-white text-dark">
                 </div>
                 <div class="col-sm-2 "><label class="text-right">Payment Terms</label></div>
                 <div class="col-sm-4 d-flex align-items-center"> <select id="p_terms" name="p_terms"
                         class="form-control bg-white text-dark">
-                        <option id="crt_term" value="{{bill.payment_terms}}" selected>{{bill.payment_terms}}</option>
                         {% for t in terms %}
                         <option value="{{t.Days}}">{{t.Terms}}</option>
                         {% endfor%}
+                        <option id="crt_term" selected></option>
                         <option value="15">Net 15</option>
                         <option value="30">Net 30</option>
                         <option value="15">Net 45</option>
@@ -333,14 +333,13 @@
                 </thead>
                 <tbody>
 
-                  {% for item in bill_items  %}
-
-                    <tr id='row{{ forloop.counter }}'>
+                    <tr id='row1'>
                         <td>
-                            <div class='form-group'>
-                              <select class='form-control bg-transparent text-black border-0 item_select itm'
-                                    name='item[]' id='item{{ forloop.counter }}'>
-                                    <option class='text-dark' id="items_nms" value="{{item.item_name}}" >{{item.item_name}}</option>
+                            <div class='form-group'><select
+                                    class='form-control bg-transparent text-black border-0 item_select itm'
+                                    name='item[]' id='item1'>
+                                    <option class='text-dark'>Select Items</option>
+                                    <option class='text-dark' id="items_nms" ></option>
                                     {% for i in items %}
                                     <option class="text-dark" value="{{i.Name}}">{{i.Name}}</option>
                                     {% endfor %}
@@ -348,12 +347,12 @@
                         </td>
                         <td>
                             <div class='form-group'>
-                                <select class='form-control bg-transparent text-black border-0 account 'name='account[]' 
-                                id='account{{ forloop.counter }}'>
-                                
-                                    <option id="crt_acc" value="{{item.account}}" >{{item.account}}</option>
+                                <select class='form-control bg-transparent text-black border-0 account '
+                                    name='account[]' id='account1'>
+                                    <option class='text-dark'>Select Account</option>
+                                    <option id="crt_acc" ></option>
                                     
-                                    <optgroup class="" label="Accounts Payable">
+                                    <optgroup class=""label="Accounts Payable">
                                       <option value='Accounts Payable' >Accounts Payable</option>
                                       {% for ac in acc %}
                                       {% if ac.account_type == "Accounts Payable" %}
@@ -544,51 +543,43 @@
                                 </select>
                             </div>
                         </td>
-                        <td class='text-right'><input type='number' id='qty{{ forloop.counter }}'
-                                class='bg-transparent border-0 text-black text-right qty' name='quantity[]' value="{{item.quantity}}">
+                        <td class='text-right'><input type='number' id='qty1'
+                                class='bg-transparent border-0 text-black text-right qty' name='quantity[]' value='0'>
                         </td>
-                        <td class='text-right'><input type='number' id='rate{{ forloop.counter }}'
-                                class='bg-transparent border-0 text-black text-right rate' name='rate[]' value="{{item.rate}}">
+                        <td class='text-right'><input type='number' id='rate1'
+                                class='bg-transparent border-0 text-black text-right rate' name='rate[]' value='0.00'>
                         </td>
 
-                        <td class='text-right'> <select name='tax[]' id='tax{{ forloop.counter }}'
-                          class='form-control bg-transparent text-black text-right border-0 tax'
-                          onclick='handleTaxChange({{ forloop.counter }})'>
-                                <option value="{{item.tax_percentage}}" selected>{{item.tax_percentage}} </option>
-                                <optgroup label="GST" >
-                                  <option value=0>Non Taxable</option>
-                                  <option value=0>0% GST</option>
-                                  <option value=5>5% GST</option>
-                                  <option value=12>12% GST</option>
-                                  <option value=18>18% GST</option>
-                                  <option value=28>28% GST</option>
-                              </optgroup>
-                              <optgroup label="IGST" >
-                                  <option value=0>0% IGST</option>
-                                  <option value=5>5% IGST</option>
-                                  <option value=12>12% IGST</option>
-                                  <option value=18>18% IGST</option>
-                                  <option value=28>28% IGST</option>
-                              </optgroup>
-                              <option value=0>Out of Scope (0%)</option>
-                            </select></td>
-                        <td style="display: none;">
-                            <input type="number" name='taxamount[]' id="taxamount{{ forloop.counter }}" class="form-control taxamount" />
+                        <td class='text-right' > 
+                          <select name='tax[]' id='tax1' 
+                                class='form-control bg-transparent text-black text-right border-0 tax'>
+                                <option value=0>Non Taxable</option>
+                                <option value=0>0% GST/IGST</option>
+                                <option value=5>5% GST/IGST</option>
+                                <option value=12>12% GST/IGST</option>
+                                <option value=18>18% GST/IGST</option>
+                                <option value=28>28% GST/IGST</option>
+                                <option value=0>Out of Scope(0%)</option>
+                            </select>
+                            
                         </td>
-                        <td class='text-right'><input type='number' id='amount{{ forloop.counter }}'
+                           
+                        <td style="display: none;">
+                            <input type="number" name='taxamount[]' id="taxamount1" class="form-control taxamount" />
+                        </td>
+                        <td class='text-right'><input type='number' id='amount1'
                                 class='bg-transparent border-0 text-black text-right amount' name='amount[]'
-                                value="{{item.amount}}"></td>
-                        <td class='text-center'><button type='button' id='copy_btn{{ forloop.counter }}'
+                                value='0.00'></td>
+                        <td class='text-center'><button type='button' id='copy_btn1'
                                 class='btn btn-transparent text-secondary btn-sm   copy_row' data-toggle='tooltip'
                                 data-placement='top' title='Clone' style='width:30px'><i
                                     class="fas fa-copy"></i></button>
                         </td>
-                        <td class='text-center'><button type='button' id='del_btn{{ forloop.counter }}'
+                        <td class='text-center'><button type='button' id='del_btn1'
                                 class='btn btn-transparent text-danger btn-sm   delete-row' data-toggle='tooltip'
                                 data-placement='top' title='delete-row' style='width:30px'><i
                                     class='fa fa-times'></i></button></td>
                     </tr>
-                    {% endfor %}
                 </tbody>
 
             </table>
@@ -605,52 +596,52 @@
                         <tr>
                             <td>Sub Total</td>
                             <td></td>
-                            <td><input type="number" id="subtotal" name="subtotal" step="any" value="{{bill.sub_total}}"
+                            <td><input type="number" id="subtotal" name="subtotal" step="any" value="0.00"
                                     class="bg-transparent border-0 text-right subtotal "></td>
                         </tr>
                         <tr style="display: none;" id="tr_igst">
                             <td>IGST</td>
                             <td></td>
-                            <td><input type="number" id='igst' name="igst" step="any" value="{{bill.igst}}"
+                            <td><input type="number" id='igst' name="igst" step="any" value="0.00"
                                     class="form-control bg-transparent border-0 text-right igst text-dark"></td>
                         </tr>
                         <tr style="display: none;" id="tr_cgst">
                             <td>CGST</td>
                             <td></td>
-                            <td><input type="number" id='cgst' name="cgst" step="any" value="{{bill.cgst}}"
+                            <td><input type="number" id='cgst' name="cgst" step="any" value="0.00"
                                     class="form-control bg-transparent border-0 text-right cgst text-dark"></td>
                         </tr>
                         <tr style="display: none;" id="tr_sgst">
                             <td>SGST</td>
                             <td></td>
-                            <td><input type="number" id='sgst' name="sgst" step="any" value="{{bill.sgst}}"
+                            <td><input type="number" id='sgst' name="sgst" step="any" value="0.00"
                                     class="form-control bg-transparent border-0 text-right sgst text-dark"></td>
                         </tr>
                         <tr>
                             <td>Tax Amount</td>
                             <td></td>
-                            <td><input type="number" id="total_taxamount" name="total_taxamount" step="any" value="{{bill.tax_amount}}"
+                            <td><input type="number" id="total_taxamount" name="total_taxamount" step="any" value="0.00"
                                     class="total_taxamount form-control bg-transparent border-0 text-right text-dark">
                             </td>
                         </tr>
                         <tr>
                             <td>Shipping Charges</td>
                             <td><input type="number" id="shipping"> <i class="fas fa-question"></i></td>
-                            <td><input type="text" id="shipping_charge" name="shipping_charge" step="any" value="{{bill.shipping_charge}}"
+                            <td><input type="text" id="shipping_charge" name="shipping_charge" step="any" value="0.00"
                                     class="form-control bg-transparent border-0 text-right shipping_charge text-dark">
                             </td>
                         </tr>
                         <tr>
                             <td>Discount</td>
                             <td><input type="number" id="discount"> <i class="fas fa-question"></i></td>
-                            <td><input type="text" id="discount_amnt" name="discount_amnt" step="any" value="{{bill.discount}}"
+                            <td><input type="text" id="discount_amnt" name="discount_amnt" step="any" value="0.00"
                                     class="form-control bg-transparent border-0 text-right discount_amnt text-dark">
                             </td>
                         </tr>
                         <tr>
                             <th>Total ( &#x20B9; )</th>
                             <th></th>
-                            <th><input type="number" id="total" name="total" step="any" value="{{bill.total}}"
+                            <th><input type="number" id="total" name="total" step="any" value="0.00"
                                     class="form-control bg-transparent border-0 text-right total text-dark"></th>
                         </tr>
                     </table>
@@ -673,10 +664,12 @@
                 </div>
             </div>
 
-            <input type="submit" class="btn text-white mt-5" style="background-color:  rgb(210, 132, 30) ; "
-                     value="Save">
-
-          
+            <input type="submit" class="btn text-white mt-5" style="background-color:  rgb(59, 59, 58) ; "
+                onclick="saveAsDraftDialog()" value="Save As Draft">
+            <input type="submit" class="btn text-white mt-5" style="background-color: rgb(210, 132, 30) ; "
+                onclick="saveAndSendDialog()" value="Save And Open">
+            <input type="submit" class="btn text-white mt-5" style="background-color:  rgb(59, 59, 58) ; "
+                onclick="cancelDialog()" value="Cancel">
         </form>
 
 
@@ -2307,8 +2300,8 @@
 <script>
 
     // set todays date on estimate date field
-    // var today = new Date().toISOString().substr(0, 10);
-    // document.getElementById("bill_date").value = today;
+    var today = new Date().toISOString().substr(0, 10);
+    document.getElementById("bill_date").value = today;
 
     // Get the bill date and due date elements
     var billDateInput = document.getElementById("bill_date");
@@ -2552,24 +2545,14 @@
                         ></td>
                
                 <td class='text-right'> <select name='tax[]' id='tax${RowCount}'
-                        class="form-control bg-transparent text-black text-right border-0 tax"
-                        onclick='handleTaxChange(${RowCount})'>
-                        <optgroup label="GST" >
-                                <option value=0>Non Taxable</option>
-                                <option value=0>0% GST</option>
-                                <option value=5>5% GST</option>
-                                <option value=12>12% GST</option>
-                                <option value=18>18% GST</option>
-                                <option value=28>28% GST</option>
-                            </optgroup>
-                            <optgroup label="IGST" >
-                                <option value=0>0% IGST</option>
-                                <option value=5>5% IGST</option>
-                                <option value=12>12% IGST</option>
-                                <option value=18>18% IGST</option>
-                                <option value=28>28% IGST</option>
-                            </optgroup>
-                            <option value=0>Out of Scope (0%)</option>
+                        class="form-control bg-transparent text-black text-right border-0 tax">
+                        <option value=0>Non Taxable</option>
+                        <option value=0>0% GST/IGST</option>
+                        <option value=5>5% GST/IGST</option>
+                        <option value=12>12% GST/IGST</option>
+                        <option value=18>18% GST/IGST</option>
+                        <option value=28>28% GST/IGST</option>
+                        <option value=0>Out of Scope(0%)</option>
                        
                     </select></td>
                 <td style="display: none;">
@@ -2631,7 +2614,6 @@
                         <select class='form-control bg-transparent text-black border-0 account '
                             name='account[]' id='account${RowCount}>
                               <option class='text-dark ' value='${currentAccount}' selected>${currentAccount}</option>
-                              <option id="crt_acc"></option>
                               
                               <optgroup class=""label="Accounts Payable">
                                 <option value='Accounts Payable' selected>Accounts Payable</option>
@@ -2832,25 +2814,15 @@
                         ></td>
                
                 <td class='text-right'> <select name='tax[]' id='tax${RowCount}'
-                        class="form-control bg-transparent text-black text-right border-0 tax"
-                        onclick='handleTaxChange(${RowCount})'>
+                        class="form-control bg-transparent text-black text-right border-0 tax">
                         <option  value='${currentTax}'>${currentTaxText}</option>
-                        <optgroup label="GST" >
-                                <option value=0>Non Taxable</option>
-                                <option value=0>0% GST</option>
-                                <option value=5>5% GST</option>
-                                <option value=12>12% GST</option>
-                                <option value=18>18% GST</option>
-                                <option value=28>28% GST</option>
-                            </optgroup>
-                            <optgroup label="IGST" >
-                                <option value=0>0% IGST</option>
-                                <option value=5>5% IGST</option>
-                                <option value=12>12% IGST</option>
-                                <option value=18>18% IGST</option>
-                                <option value=28>28% IGST</option>
-                            </optgroup>
-                            <option value=0>Out of Scope (0%)</option>
+                        <option value=0>Non Taxable</option>
+                        <option value=0>0% GST/IGST</option>
+                        <option value=5>5% GST/IGST</option>
+                        <option value=12>12% GST/IGST</option>
+                        <option value=18>18% GST/IGST</option>
+                        <option value=28>28% GST/IGST</option>
+                        <option value=0>Out of Scope(0%)</option>
                        
                     </select></td>
                 <td style="display: none;">
@@ -3065,7 +3037,6 @@ $.ajax({
           acc_name = response.name
           console.log(acc_name)
           document.getElementById("crt_acc").innerHTML = acc_name
-          document.getElementById("crt_acc1").innerHTML = acc_name
           document.getElementById("modalCustomer").reset();
       },
   });        
@@ -3451,6 +3422,7 @@ $.ajax({
      
 </script>
 
+<!-- create item -->
 
 <script>
     function create_item() {
@@ -3657,19 +3629,6 @@ $.ajax({
                     rate = response.rate
 
                     document.getElementById('rate1').value = rate
-
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax1 optgroup[label="GST"]').show();
-                           $('#tax1 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax1 optgroup[label="GST"]').hide();
-                           $('#tax1 optgroup[label="IGST"]').show();
-                       }
-                   });
                 }
             });
 
@@ -3691,19 +3650,6 @@ $.ajax({
                     //console.log(response)
                     rate = response.rate
                     document.getElementById('rate2').value = rate;
-
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax2 optgroup[label="GST"]').show();
-                           $('#tax2 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax2 optgroup[label="GST"]').hide();
-                           $('#tax2 optgroup[label="IGST"]').show();
-                       }
-                   });
                 }
             });
 
@@ -3725,19 +3671,6 @@ $.ajax({
                     //console.log(response)
                     rate = response.rate
                     document.getElementById('rate3').value = rate;
-
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax3 optgroup[label="GST"]').show();
-                           $('#tax3 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax3 optgroup[label="GST"]').hide();
-                           $('#tax3 optgroup[label="IGST"]').show();
-                       }
-                   });
                 }
             });
 
@@ -3759,19 +3692,6 @@ $.ajax({
                     //console.log(response)
                     rate = response.rate
                     document.getElementById('rate4').value = rate;
-
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax4 optgroup[label="GST"]').show();
-                           $('#tax4 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax4 optgroup[label="GST"]').hide();
-                           $('#tax4 optgroup[label="IGST"]').show();
-                       }
-                   });
                 }
             });
 
@@ -3793,19 +3713,6 @@ $.ajax({
                     //console.log(response)
                     rate = response.rate
                     document.getElementById('rate5').value = rate;
-
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax5 optgroup[label="GST"]').show();
-                           $('#tax5 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax5 optgroup[label="GST"]').hide();
-                           $('#tax5 optgroup[label="IGST"]').show();
-                       }
-                   });
                 }
             });
 
@@ -3827,19 +3734,6 @@ $.ajax({
                     //console.log(response)
                     rate = response.rate
                     document.getElementById('rate6').value = rate;
-
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax6 optgroup[label="GST"]').show();
-                           $('#tax6 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax6 optgroup[label="GST"]').hide();
-                           $('#tax6 optgroup[label="IGST"]').show();
-                       }
-                   });
                 }
             });
 
@@ -3861,19 +3755,6 @@ $.ajax({
                     //console.log(response)
                     rate = response.rate
                     document.getElementById('rate7').value = rate;
-
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax7 optgroup[label="GST"]').show();
-                           $('#tax7 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax7 optgroup[label="GST"]').hide();
-                           $('#tax7 optgroup[label="IGST"]').show();
-                       }
-                   });
                 }
             });
 
@@ -3895,19 +3776,6 @@ $.ajax({
                     //console.log(response)
                     rate = response.rate
                     document.getElementById('rate8').value = rate;
-
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax8 optgroup[label="GST"]').show();
-                           $('#tax8 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax8 optgroup[label="GST"]').hide();
-                           $('#tax8 optgroup[label="IGST"]').show();
-                       }
-                   });
                 }
             });
 
@@ -3929,19 +3797,6 @@ $.ajax({
                     //console.log(response)
                     rate = response.rate
                     document.getElementById('rate9').value = rate;
-
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax9 optgroup[label="GST"]').show();
-                           $('#tax9 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax9 optgroup[label="GST"]').hide();
-                           $('#tax9 optgroup[label="IGST"]').show();
-                       }
-                   });
                 }
             });
 
@@ -3963,19 +3818,6 @@ $.ajax({
                     //console.log(response)
                     rate = response.rate
                     document.getElementById('rate10').value = rate;
-
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax10 optgroup[label="GST"]').show();
-                           $('#tax10 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax10 optgroup[label="GST"]').hide();
-                           $('#tax10 optgroup[label="IGST"]').show();
-                       }
-                   });
 
 
 
@@ -4001,19 +3843,6 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate11').value = rate;
 
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax11 optgroup[label="GST"]').show();
-                           $('#tax11 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax11 optgroup[label="GST"]').hide();
-                           $('#tax11 optgroup[label="IGST"]').show();
-                       }
-                   });
-
 
 
                 }
@@ -4037,19 +3866,6 @@ $.ajax({
                     //console.log(response)
                     rate = response.rate
                     document.getElementById('rate12').value = rate;
-
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax12 optgroup[label="GST"]').show();
-                           $('#tax12 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax12 optgroup[label="GST"]').hide();
-                           $('#tax12 optgroup[label="IGST"]').show();
-                       }
-                   });
 
 
 
@@ -4075,19 +3891,6 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate13').value = rate;
 
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax13 optgroup[label="GST"]').show();
-                           $('#tax13 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax13 optgroup[label="GST"]').hide();
-                           $('#tax13 optgroup[label="IGST"]').show();
-                       }
-                   });
-
 
 
                 }
@@ -4111,19 +3914,6 @@ $.ajax({
                     //console.log(response)
                     rate = response.rate
                     document.getElementById('rate14').value = rate;
-
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax14 optgroup[label="GST"]').show();
-                           $('#tax14 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax14 optgroup[label="GST"]').hide();
-                           $('#tax14 optgroup[label="IGST"]').show();
-                       }
-                   });
 
 
 
@@ -4149,19 +3939,6 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate15').value = rate;
 
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax15 optgroup[label="GST"]').show();
-                           $('#tax15 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax15 optgroup[label="GST"]').hide();
-                           $('#tax15 optgroup[label="IGST"]').show();
-                       }
-                   });
-
 
 
                 }
@@ -4185,19 +3962,6 @@ $.ajax({
                     //console.log(response)
                     rate = response.rate
                     document.getElementById('rate16').value = rate;
-
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax16 optgroup[label="GST"]').show();
-                           $('#tax16 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax16 optgroup[label="GST"]').hide();
-                           $('#tax16 optgroup[label="IGST"]').show();
-                       }
-                   });
 
 
 
@@ -4223,19 +3987,6 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate17').value = rate;
 
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax17 optgroup[label="GST"]').show();
-                           $('#tax17 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax17 optgroup[label="GST"]').hide();
-                           $('#tax17 optgroup[label="IGST"]').show();
-                       }
-                   });
-
 
 
                 }
@@ -4259,19 +4010,6 @@ $.ajax({
                     //console.log(response)
                     rate = response.rate
                     document.getElementById('rate18').value = rate;
-
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax18 optgroup[label="GST"]').show();
-                           $('#tax18 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax18 optgroup[label="GST"]').hide();
-                           $('#tax18 optgroup[label="IGST"]').show();
-                       }
-                   });
 
 
 
@@ -4297,19 +4035,6 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate19').value = rate;
 
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax19 optgroup[label="GST"]').show();
-                           $('#tax19 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax19 optgroup[label="GST"]').hide();
-                           $('#tax19 optgroup[label="IGST"]').show();
-                       }
-                   });
-
 
 
                 }
@@ -4333,19 +4058,6 @@ $.ajax({
                     //console.log(response)
                     rate = response.rate
                     document.getElementById('rate20').value = rate;
-
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax20 optgroup[label="GST"]').show();
-                           $('#tax20 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax20 optgroup[label="GST"]').hide();
-                           $('#tax20 optgroup[label="IGST"]').show();
-                       }
-                   });
 
 
 
@@ -4371,19 +4083,6 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate21').value = rate;
 
-                    var pos = document.getElementById("pos").value;
-                    var sos = document.getElementById("sos").value;
-
-                    $(document).ready(function() {
-                       if (pos === sos) {
-                           $('#tax21 optgroup[label="GST"]').show();
-                           $('#tax21 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax21 optgroup[label="GST"]').hide();
-                           $('#tax21 optgroup[label="IGST"]').show();
-                       }
-                   });
-
 
 
                 }
@@ -4393,22 +4092,6 @@ $.ajax({
 
 
     });
-</script>
-
-<script>
- function handleTaxChange(selectId) {
-        var pos = $("#pos").val();
-        var sos = $("#sos").val();
-        
-        if (pos === sos) {
-            $(`#tax${selectId} optgroup[label="GST"]`).show();
-            $(`#tax${selectId} optgroup[label="IGST"]`).hide();
-        } else {
-            $(`#tax${selectId} optgroup[label="GST"]`).hide();
-            $(`#tax${selectId} optgroup[label="IGST"]`).show();
-        }
-    }
-
 </script>
 
 

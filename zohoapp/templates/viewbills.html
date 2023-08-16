@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
   /* width */
   ::-webkit-scrollbar {
@@ -21,76 +22,83 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #555;
   }
+  .d-flex {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adjust the spacing between the input and button */
+}
 </style>
 
 
 <!-- <div class="fixed-top  " style="top: 7rem; margin-left: 20rem;"> -->
 
-  <section id="estimates_section">
-    <div class="row  mx-2">
-      <div class="col-md-6 py-2">
-        <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            All Bills <i class="fas fa-caret-down"></i>
-          </button>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <!-- Dropdown menu items here -->
-            <a class="dropdown-item" href="#">Item 1</a>
-            <a class="dropdown-item" href="#">Item 2</a>
-            <a class="dropdown-item" href="#">Item 3</a>
-          </div>
-        </div>
+<section id="estimates_section">
+  <div class="row  mx-2">
+    
 
-      </div>
-      <div class="col-md-6 form-inline justify-content-end py-2">
-        <a style="color: white; background-color: rgb(210, 132, 30);" class="btn mr-1" href="{% url 'new_bill' %}"><i
-            class="fa-solid fa-plus " ></i>New</a>
-        <div class="dropdown rounded" style="color: white; background-color: rgb(210, 132, 30);">
-          <button type="button" class="btn dropdown-toggle text-white" data-toggle="dropdown">
+      <div class="col-md-2 py-2">
+        <form action="{% url 'search_bill' %}" method="post">
+          {% csrf_token %}
+        <select class="form-control btn btn-outline-warning dropdown-toggle text-white" aria-label=".form-select-lg example"
+        style="width: 40%; margin-top: 8px;" name="type">
 
-          </button>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="#">Create Bill</a>
-            <a class="dropdown-item" href="#">Create Bill (Pre GST)</a>
-          </div>
+        <option value="1" selected>All Bills</option>
+        <option value="2">Customer Name</option>
+        <option value="3">Bill No</option>
+
+       </select>
         </div>
+        <div class="col-md-6 py-3 d-flex">
+          <input type="text" id="search" name="search" class="form-control" placeholder="Type here..">
+          <button type="submit" class="searchButton py-1">
+              <i class="fa fa-search"></i>
+          </button>
       </div>
+    </form>
+
+    
+
+    <div class="col-md-4 form-inline justify-content-end py-2">
+      <a style="color: white; background-color: rgb(210, 132, 30);" class="btn mr-1" href="{% url 'new_bill' %}"><i
+          class="fa-solid fa-plus "></i>New</a>
+      
     </div>
+  </div>
 
-    <div class="col-sm-12" style="height: 600px; overflow-y: scroll;">
-      <table id="estimates-table" class="table  text-white text-center">
-        <thead>
-          <tr>
-            <th>DATE</th>
-            <th>BILL NUMBER</th>
-            <th>ORDER NUMBER</th>
-            <th>CUSTOMER NAME</th>
-            <th>VENDOR NAME</th>
-            <th>STATUS</th>
-            <th>AMOUNT</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for bill in bills %}
-          <tr class="clickable-row" data-href="{% url 'bill_view' bill.id %}">
-            <td>{{bill.bill_date}}</td>
-            <td>{{bill.bill_no}}</td>
-            <td>{{bill.order_number}}</td>
-            <td>{{bill.customer_name}}</td>
-            <td>Mr.{{bill.vendor_name}}</td>
-            <td>{{bill.status}}</td>
-            <td>{{bill.total}}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-
-
-      </table>
-</div>
-  </section>
+  <div class="col-sm-12 mt-4" style="height: 600px; overflow-y: scroll;">
+    <table id="estimates-table" class="table  text-white text-center">
+      <thead>
+        <tr>
+          <th>DATE</th>
+          <th>BILL NUMBER</th>
+          <th>ORDER NUMBER</th>
+          <th>CUSTOMER NAME</th>
+          <th>VENDOR NAME</th>
+          <th>STATUS</th>
+          <th>AMOUNT</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for bill in bills %}
+        <tr class="clickable-row" data-href="{% url 'bill_view' bill.id %}">
+          <td>{{bill.bill_date}}</td>
+          <td>{{bill.bill_no}}</td>
+          <td>{{bill.order_number}}</td>
+          <td>{{bill.customer_name}}</td>
+          <td>Mr.{{bill.vendor_name}}</td>
+          <td>{{bill.status}}</td>
+          <td>{{bill.total}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
 
 
-  
+    </table>
+  </div>
+</section>
+
+
+
 </div>
 
 

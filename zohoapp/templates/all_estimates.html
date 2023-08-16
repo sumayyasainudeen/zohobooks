@@ -25,14 +25,14 @@
 </style>
 
 
-<div class="fixed-top  " style="top: 7rem; margin-left: 20rem;">
+<!-- <div class="fixed-top  " style="top: 7rem; margin-left: 20rem;"> -->
 
   <section id="estimates_section">
     <div class="row  mx-2">
       <div class="col-md-6 py-2"><a class="text-white" style="font-size: 1.5rem;"> All Estimates</a></div>
       <div class="col-md-6 form-inline justify-content-end py-2">
         <a style="color: white; background-color: rgb(210, 132, 30);" class="btn mr-1" href="{% url 'newestimate' %}"><i
-            class="fa-solid fa-plus " ></i>New</a>
+            class="fa-solid fa-plus "></i>New</a>
         <div class="dropdown rounded" style="color: white; background-color: rgb(210, 132, 30);">
           <button type="button" class="btn dropdown-toggle text-white" data-toggle="dropdown">
 
@@ -58,6 +58,7 @@
           </tr>
         </thead>
         <tbody>
+         
           {% for estimate in estimates %}
           <tr class="clickable-row" data-href="{% url 'estimateslip' estimate.id %}">
             <td>{{estimate.estimate_date}}</td>

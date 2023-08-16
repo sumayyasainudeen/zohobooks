@@ -8,6 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/JavaScript-autoComplete/1.0.4/auto-complete.min.js"
     integrity="sha512-LwZthDLbb+dritfG9jbFyY1ClYqlkF4I9foqo+783wcl6EPR+kE3uqb0OPsieHt4pFH4HVduwX6rTTDmCaC20g=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
 <style>
     /* width */
@@ -193,12 +194,12 @@
 
 
 
-<div class="fixed-top  " style="top: 7rem; margin-left: 20rem;">
+<!-- <div class="fixed-top  " style="top: 7rem; margin-left: 20rem;"> -->
     <div class="row">
         <div class="col-md-4">
             <div class="row  mx-2">
                 <div class="col-md-6 py-2"><a class="text-white" style="font-size: 1.5rem;"> All Estimates</a></div>
-                <div class="col-md-6 form-inline justify-content-end py-2">
+                <div class="col-md-6 form-inline justify-content-end py-2" >
                     <a style="color: white; background-color: rgb(210, 132, 30);" class="btn mr-1"
                         href="{% url 'newestimate' %}"><i class="fa-solid fa-plus "></i>New</a>
                     <div class="dropdown rounded" style="color: white; background-color: rgb(210, 132, 30);">
@@ -253,14 +254,14 @@
             <div class="row  mx-2 py-3" style="background-color: rgba(252, 236, 217, 0.8)">
                 <div class="col-md-5 text-dark" style="font-size: 2.5rem;">
                     EST-{{estimate.estimate_no }}</div>
-                <div class="col-md-7 text-white text-right my-auto">
+                <div class="col-md-7 text-white text-right my-auto" style="text-align: right;">
                     <div class="btn-group" role="group" aria-label="Basic example">
                         <a href="{% url 'editestimate' estimate.id %}" class="btn btn-sm text-white"
                             style="background-color:  rgb(86, 86, 85);" data-toggle="tooltip" title="Edit">
-                            <i class="fa fa-pencil"></i></a>
+                            <i class="fas fa-pencil-alt"></i></a>
                         <a href="" class="btn btn-sm text-white btn_print" style="background-color:  rgb(86, 86, 85);"
                             data-toggle="tooltip" title="PDF" id="pdf">
-                            <i class="fa fa-file-pdf-o"></i></a>
+                            <i class="fas fa-file-pdf"></i></a>
                         <a href="" class="btn btn-sm text-white btn_print" style="background-color:  rgb(86, 86, 85);"
                             data-toggle="tooltip" title="Print">
                             <i class="fa fa-print"></i></a>
@@ -290,7 +291,7 @@
                             <h6 class="text-dark">{{ company.address }}</h6>
                             <h6 class="text-dark">{{ company.city }},{{ company.state }}</h6>
                         </div>
-                        <div class="col-md-6 text-right">
+                        <div class="col-md-6 text-right" style="text-align: right;">
                             <h1 class="text-dark" style="font-size: 3rem; ">ESTIMATE</h1>
                             <h6 class="text-dark">Estimate Number : EST-{{estimate.estimate_no }}</h6>
                         </div>
@@ -301,7 +302,7 @@
                             <h6 class="text-dark">Bill To</h6>
                             <h6 class="text-dark">{{ estimate.customer_name }}</h6>
                         </div>
-                        <div class="col-md-6 text-right mt-auto">
+                        <div class="col-md-6 text-right mt-auto" style="text-align: right;">
                             <h6 class="text-dark ">Order Date : {{ estimate.estimate_date }}</h6>
                         </div>
                     </div>
@@ -309,10 +310,10 @@
                         <thead class="bg-secondary text-white">
                             <tr>
                                 <th>#</th>
-                                <th style="width: 30rem;">Item</th>
-                                <th class="text-right">Quantity</th>
-                                <th class="text-right">Rate</th>
-                                <th class="text-right">Amount</th>
+                                <th style="width: 30rem; color: white;">Item</th>
+                                <th  style="text-align: right; color: white;">Quantity</th>
+                                <th  style="text-align: right; color: white;">Rate</th>
+                                <th  style="text-align: right; color: white;">Amount</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -320,9 +321,9 @@
                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ item.item_name }}</td>
-                                <td class="text-right">{{ item.quantity }}</td>
-                                <td class="text-right">{{ item.rate|floatformat:3 }}</td>
-                                <td class="text-right">{{ item.amount|floatformat:3 }}</td>
+                                <td  style="text-align: right;">{{ item.quantity }}</td>
+                                <td  style="text-align: right;">{{ item.rate|floatformat:3 }}</td>
+                                <td  style="text-align: right;">{{ item.amount|floatformat:3 }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -330,46 +331,46 @@
                     <table class="table">
                         <tr>
 
-                            <td class="text-right">Sub-Total:</td>
-                            <td class="text-right">{{ estimate.sub_total|floatformat:3}}</td>
+                            <td  style="text-align: right;">Sub-Total:</td>
+                            <td  style="text-align: right;">{{ estimate.sub_total|floatformat:3}}</td>
                         </tr>
                         {% if estimate.cgst != 0 %}
                         <tr>
-                            <td class="text-right">CGST:</td>
-                            <td class="text-right">{{ estimate.cgst|floatformat:3}}</td>
+                            <td  style="text-align: right;">CGST:</td>
+                            <td  style="text-align: right;">{{ estimate.cgst|floatformat:3}}</td>
                         </tr>
                         {% endif %}
                         {% if estimate.sgst != 0 %}
                         <tr>
-                            <td class="text-right">SGST:</td>
-                            <td class="text-right">{{ estimate.sgst|floatformat:3}}</td>
+                            <td  style="text-align: right;">SGST:</td>
+                            <td  style="text-align: right;">{{ estimate.sgst|floatformat:3}}</td>
                         </tr>
                         {% endif %}
                         {% if estimate.igst != 0 %}
                         <tr>
 
-                            <td class="text-right">IGST:</td>
-                            <td class="text-right">{{ estimate.igst|floatformat:3}}</td>
+                            <td  style="text-align: right;">IGST:</td>
+                            <td  style="text-align: right;">{{ estimate.igst|floatformat:3}}</td>
                         </tr>
                         {% endif %}
                         {% if estimate.shipping_charge != 0 %}
                         <tr>
 
-                            <td class="text-right">Shipping Charge:</td>
-                            <td class="text-right">{{ estimate.shipping_charge|floatformat:3}}</td>
+                            <td  style="text-align: right;">Shipping Charge:</td>
+                            <td  style="text-align: right;">{{ estimate.shipping_charge|floatformat:3}}</td>
                         </tr>
                         {% endif %}
                         {% if estimate.adjustment != 0 %}
                         <tr>
 
-                            <td class="text-right">Adjustment:</td>
-                            <td class="text-right">{{ estimate.adjustment|floatformat:3}}</td>
+                            <td  style="text-align: right;">Adjustment:</td>
+                            <td  style="text-align: right;">{{ estimate.adjustment|floatformat:3}}</td>
                         </tr>
                         {% endif %}
                         <tr>
 
-                            <td class="text-right">Total:</td>
-                            <td class="text-right">{{ estimate.total|floatformat:3}}</td>
+                            <td  style="text-align: right;">Total:</td>
+                            <td  style="text-align: right;">{{ estimate.total|floatformat:3}}</td>
                         </tr>
 
                     </table>

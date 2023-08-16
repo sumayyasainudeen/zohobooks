@@ -130,12 +130,16 @@
         .nav-tabs {
             border-bottom: none;
         }
+        .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 999;
+        /* Adjust the alpha value to control the opacity */
+    }
 
 </style>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
-
 
 <script type="text/javascript">
     $(document).ready(function ($) {
@@ -144,35 +148,18 @@
         $(document).on('click', '.btn_print', function (event) {
             console.log('print1');
             event.preventDefault();
-
-            //credit : https://ekoopmans.github.io/html2pdf.js
-
             var element = document.getElementById('whatToPrint');
-
-            //easy
-            //html2pdf().from(element).save();
-
-            //custom file name
-            //html2pdf().set({filename: 'code_with_mark_'+js.AutoCode()+'.pdf'}).from(element).save();
-
-
-            //more custom settings
             var opt =
             {
                 margin: 1,
-                filename: 'estimate_' + '.pdf',
+                filename: 'purchase_bill_' + '.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2 },
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
-
-            // New Promise-based usage:
             html2pdf().set(opt).from(element).save();
 
-
         });
-
-
 
     });
 </script>
@@ -253,8 +240,8 @@
                     <a href="" class="btn btn-sm text-white btn_print" style="background-color:  rgb(86, 86, 85);"
                         data-toggle="tooltip" title="PDF" id="pdf">
                         <i class="fa fa-file-pdf-o"></i></a>
-                    <a href="" class="btn btn-sm text-white btn_print" style="background-color:  rgb(86, 86, 85);"
-                        data-toggle="tooltip" title="Print">
+                    <a href="" class="btn btn-sm text-white " style="background-color:  rgb(86, 86, 85);"
+                        data-toggle="tooltip" title="Print" onclick="printPageContent()">
                         <i class="fa fa-print"></i></a>
                     <a href="{% url 'emailattachment' %}" class="btn btn-sm text-white"
                         style="background-color:  rgb(86, 86, 85);" data-toggle="tooltip" title="Email">
@@ -263,24 +250,26 @@
 
                 {% if bill.attachment %}
                 <a download href="{{bill.attachment.url}}" class="btn btn-sm text-white"
-                    style="background-color:  rgb(86, 86, 85);" data-toggle="tooltip" data-placement="top"
+                    style="background-color:  rgb(86, 86, 85);" data-toggle="tooltip" 
                     title="Download">
                     <i class="fas fa-download"></i></a>
                 <!-- <div style="padding: 10px; cursor: pointer;" data-toggle="tooltip" data-placement="top" title="Download">
                         <a download  href="{{bill.attachment.url}}"><i class="fas fa-download"></i></a>
                     </div> -->
                 {% else %}
-                <a download href="#" class="btn btn-sm text-white" style="background-color:  rgb(86, 86, 85);"
+                <a href="#" class="btn btn-sm text-white" style="background-color:  rgb(86, 86, 85);"
                     data-toggle="modal" data-target="#attachModal" data-inv-id="{{ bill.id }}">
-                    <i class="fas fa-paperclip"></i></a>
+                    <i class="fas fa-paperclip" data-toggle="tooltip" 
+                    title="Attach File"></i></a>
                 <!-- <div style="padding: 10px; cursor: pointer;" data-toggle="tooltip" data-placement="top" title="Attach File">
                         <a href="#"  class="comment-icon" data-toggle="modal" data-target="#attachModal" 
                          data-inv-id="{{ bill.id }}"><i class="fas fa-paperclip"></i></a>
                     </div> -->
                 {% endif %}
-                <a href="" class="btn btn-sm text-white" style="background-color:  rgb(86, 86, 85);"
-                    onclick="return confirm('Do you want to Delete this Estimate?');"><i
-                        class="fas fa-trash-alt"></i></a>
+                <a href="{% url 'delete_bill' bill.id %}" class="btn btn-sm text-white" style="background-color:  rgb(86, 86, 85);"
+                    onclick="return confirm('Do you want to Delete this Bill?');"><i
+                        class="fas fa-trash-alt" data-toggle="tooltip" 
+                        title="Delete"></i></a>
             </div>
         </div>
 
@@ -421,17 +410,17 @@
                         </div>
                         <div class="tab-pane fade " id="comment" role="tabpanel" aria-labelledby="contact-tab">
                             <div class="addcomment">
-                                <form  id="comment-form" action="" method="POST">
+                                <form  id="comment-form" action="{% url 'add_comment_bills' bill.id %}" method="POST">
                                     {% csrf_token %}
                                     {% if bill.comments %}
                                     <label class="text-dark pb-2" for="">Edit Comment</label>
-                                    <textarea style="width: 100%;" name="comment" placeholder="{{ bill.comments}}">{{ inv.comments}}</textarea>
+                                    <textarea style="width: 100%;" name="comment">{{ bill.comments}}</textarea>
                                     {% else %}
                                     <textarea style="width: 100%;" name="comment" placeholder="Add a comment"></textarea>
                                     {% endif %}
                                     <div class="text-center pt-4 pb-2">
                                         <button class="btn  " type="submit" style="background-color: rgb(44, 44, 43);" onclick="cancelDialog()">Cancel</button>
-                                        <button class="btn  " type="submit" style="background-color: rgb(210, 114, 30);" onclick="saveDialog('{{bill.id}}')">Save</button>
+                                        <button class="btn  " type="submit" style="background-color: rgb(210, 114, 30);" onclick="saveDialog()" >Save</button>
                                     </div>
                                     
                                 </form>
@@ -467,6 +456,30 @@
 
 </div>
 
+<!-- Attach File Modal -->
+<div class="modal fade" id="attachModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content bg-dark">
+        <div class="modal-header">
+          <h5 class="modal-title" id="commentModalLabel">Upload File</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body ">
+          <form  id="comment-form" action="{% url 'upload_file_bills' bill.id %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="file"  style="margin-top: 10px; width: 70%;">
+            <div class="text-center pt-4 pb-2">
+                <button class="btn  " type="submit" style="background-color:rgb(255, 145, 0) ;">Submit</button>
+            </div>
+            
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
 <script>
     // Add click event listener to all rows with class "clickable-row"
@@ -481,15 +494,13 @@
     });
 </script>
 <script>
-     function saveAsDraftDialog() {
-
-
+     function saveDialog() {
         var frm = document.getElementById("comment-form");
-        frm.action = ("{% url 'add_comment_bills' bill.id %}")
+        frm.submit(); // Submit the form
     }
 
     function cancelDialog() {
-
+        console.log("hi");
         var frm = document.getElementById("comment-form");
         let customMsg = "Do you want to cancel?";
 
@@ -498,7 +509,7 @@
         }
     }
 </script>
-<script>
+<!-- <script>
 
     function print() {
         var content = document.getElementById("whatToPrint");
@@ -510,62 +521,27 @@
 
     }
 
+</script> -->
 
-
-// function saveAsPDF() {
-// const element = document.getElementById("whatToPrint");
-// const opt = {
-// margin: 1,
-// filename: "estimate.pdf",
-// image: { type: "jpeg", quality: 0.98 },
-// html2canvas: { scale: 2 },
-// jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-// output: "save", // this option tells html2pdf to save the file instead of downloading it
-// outputParam: "D:/sumi/Altos/zoho_django (1)/zoho_django/media/image/estimate.pdf" // this is the path where the file
-// will be saved
-// };
-// html2pdf().set(opt).from(element).save();
-// }
-
-// function ConvertToPDF() {
-// var doc = new jsPDF();
-// var HTMLelement = $(".convert_to_pdf").html();
-// doc.fromHTML(HTMLelement, 10, 10, {
-// 'width': 190
-// });
-// doc.save('estimateslip.pdf');
-// }
-
-
-</script>
 <script>
-        function openFilePicker() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.pdf'; // set the file type filter to only allow PDF files
-        input.addEventListener('change', () => {
-            const file = input.files[0];
-        // send the selected file to the server via AJAX
-        const formData = new FormData();
-        formData.append('file', file);
-        $.ajax({
-            url: '/send_email/',
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function (response) {
-            alert('File uploaded successfully');
-                },
-        error: function (xhr, status, error) {
-            alert('Error uploading file: ' + error);
-                }
-            });
-        });
-        input.click();
+    function printPageContent() {
+      const contentToPrint = document.getElementById('whatToPrint');
+      const clonedContent = contentToPrint.cloneNode(true);
+  
+     
+      const textElements = clonedContent.querySelectorAll('.text');
+  
+     
+      textElements.forEach(element => {
+        element.style.color = '#000000';  
+      });
+  
+     
+      const printWindow = window.open('', '_blank');
+      printWindow.document.body.appendChild(clonedContent);
+      printWindow.print();
+      printWindow.close();
     }
-</script>
-
-
+  </script>
 
 {% endblock %}

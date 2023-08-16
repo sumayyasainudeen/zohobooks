@@ -134,7 +134,7 @@ urlpatterns = [
     
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
 
-
+#------------------------------------------------------------------------------------------------sumayya---purchase bills
     path('view_bills',views.view_bills,name='view_bills'),
     path('new_bill/',views.new_bill,name='new_bill'),
     path('get_customer_data_bill/',views.get_customer_data_bill,name='get_customer_data_bill'),
@@ -144,20 +144,28 @@ urlpatterns = [
     path('itemdata_bills/',views.itemdata_bills,name='itemdata_bills'),
     path('bill_view/<int:b_id>',views.bill_view,name='bill_view'),
     path('edit_bill/<int:bill_id>',views.edit_bill,name='edit_bill'),
+    path('update_bills/<int:pk>',views.update_bills,name='update_bills'),
     path('add_comment_bills/<int:bill_id>',views.add_comment_bills,name='add_comment_bills'),
-    # path('updateestimate/<int:pk>',views.updateestimate,name='updateestimate'),
-    # path('converttoinvoice/<int:est_id>',views.converttoinvoice,name='converttoinvoice'),
-    # path('emailattachment', EmailAttachementView.as_view(), name='emailattachment'),
-    path('add_customer_for_bills/',views.add_customer_for_bills,name='add_customer_for_bills'),
+    path('upload_file_bills/<int:bill_id>',views.upload_file_bills,name='upload_file_bills'),
+    path('delete_bill/<int:bill_id>',views.delete_bill,name='delete_bill'),
+    path('search_bill/',views.search_bill,name='search_bill'),
+    
     path('entr_custmr_for_bills/',views.entr_custmr_for_bills,name='entr_custmr_for_bills'),
-    path('payment_term_for_bills/',views.payment_term_for_bills,name='payment_term_for_bills'),
-    path('payment_term_for_bills1/',views.payment_term_for_bills1,name='payment_term_for_bills1'),
-    # path('add_vendor_for_bills/',views.add_vendor_for_bills,name='add_vendor_for_bills'),
     path('add_vendor_bills/',views.add_vendor_bills,name='add_vendor_bills'),
     path('additem_bills/',views.additem_bills,name='additem_bills'),
+    path('create_account_bills/',views.create_account_bills,name='create_account_bills'),
+    path('create_payment_terms_bills/',views.create_payment_terms_bills,name='create_payment_terms_bills'),
+
     path('add_sales_bills/',views.add_sales_bills,name='add_sales_bills'),
-    path('add_account_bills/',views.add_account_bills,name='add_account_bills'),
-    path('add_unit_bills/',views.add_unit_bills,name='add_unit_bills'),
+    # path('add_unit_bills/',views.add_unit_bills,name='add_unit_bills'),
+
+    # path('payment_term_for_bills/',views.payment_term_for_bills,name='payment_term_for_bills'),
+    # path('payment_term_for_bills1/',views.payment_term_for_bills1,name='payment_term_for_bills1'),
+    # path('converttoinvoice/<int:est_id>',views.converttoinvoice,name='converttoinvoice'),
+    # path('emailattachment', EmailAttachementView.as_view(), name='emailattachment'),
+    # path('add_customer_for_bills/',views.add_customer_for_bills,name='add_customer_for_bills'),
+    # path('add_account_bills/',views.add_account_bills,name='add_account_bills'),
+
     
     
     

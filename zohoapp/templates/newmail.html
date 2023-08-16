@@ -5,7 +5,15 @@
 {% load static %}
 
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
+<style>
+  
+  .form-control {
+    background-color: black;
+  }
+  .form-control:focus {
+      background-color: black;
+  }
+</style>
 <section  >
     <div class="row fixed-top  " style="top: 7rem; margin-left: 15rem; position: fixed;" >
      
@@ -21,8 +29,9 @@
                 {% endif %}
                 
                 {% if email_form %}
-                <form method="POST" action ="" enctype="multipart/form-data" style="width: 90%;" >
+                <form method="POST" action ="" enctype="multipart/form-data" style="width: 90%; color: white;" >
                   {% csrf_token %}
+                  
                   {{email_form|crispy}}
                 <button style="margin-bottom: 15rem;" type="submit" class="btn btn-primary">Send Email</button>
                 <br><br><br><br><br>
